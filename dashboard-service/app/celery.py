@@ -12,6 +12,6 @@ celery_app.autodiscover_tasks(['app.tasks'])
 celery_app.conf.beat_schedule = {
     "update-dashboard": {
         "task": "update_dashboard",
-        "schedule": 30.0,
+        "schedule": 60.0,
     },
 }

@@ -64,7 +64,7 @@ Both services use PostgreSQL as their database. The following environment variab
 
 ## Celery Tasks
 
-The Dashboard Service includes a Celery task that periodically updates the dashboard data by fetching events from the Data Provider. The task is scheduled to run every 30 seconds.
+The Dashboard Service includes a Celery task that periodically updates the dashboard data by fetching events from the Data Provider. The task is scheduled to run every 60 seconds.
 
 ## API Endpoints
 

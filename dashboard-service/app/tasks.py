@@ -4,7 +4,7 @@ import asyncio
 from datetime import datetime, timedelta
 from celery import shared_task
 
-from app.models import DashboardData
+from app.models import DashboardData, SyncSettings
 from app.database import init_db, close_db
 
 
@@ -23,19 +23,20 @@ async def process_update():
 
     await init_db()
 
-    params = {
-        "updated__gte": datetime.now().replace(hour=0, minute=0, second=0, microsecond=0).isoformat(),
-        "updated__lte": datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999).isoformat(),
-    }
+    sync_setting = await SyncSettings.first()
+    last_sync_timestamp = sync_setting.last_sync_timestamp if sync_setting else None
+
+    params = {}
+
+    if last_sync_timestamp:
+        params["updated__gte"] = last_sync_timestamp.isoformat()
+    
     response = requests.get(DATA_PROVIDER_URL, params=params)
     events = response.json()
 
     for event in events:
-        event_timestamp = datetime.fromisoformat(event['timestamp'].replace('Z', '+00:00'))
-        print(event)
-        print("Event timestamp year:", event_timestamp.year)
-        print("Event timestamp month:", event_timestamp.month)
-        print("Event timestamp day:", event_timestamp.day)
+        event_timestamp = datetime.strptime(event['timestamp'], "%Y-%m-%dT%H:%M:%S.%fZ")
+        
         existing_record = await DashboardData.filter(
             hotel_id=event['hotel_id'],
             year=event_timestamp.year,
@@ -54,6 +55,13 @@ async def process_update():
                 day=event_timestamp.day,
                 bookings_count=1 if event['rpg_status'] == 1 else 0
             )
+
+    if len(events) > 0:
+        if sync_setting:
+            sync_setting.last_sync_timestamp = event_timestamp + timedelta(milliseconds=1)
+            await sync_setting.save()
+        else:
+            await SyncSettings.create(last_sync_timestamp=event_timestamp)
 
     print("Dashboard updated")
     await close_db()
