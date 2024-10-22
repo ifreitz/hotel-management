@@ -13,11 +13,7 @@ This project consists of two main services: **Data Provider** and **Dashboard Se
   - Tortoise ORM
   - Asyncpg
   - Celery (with Redis)
-  
-- **Docker Command**:
-  ```bash
-  docker-compose up data-provider
-  ```
+- **URL**: http://localhost:8000
 
 - **Swagger Documentation**: Access the Swagger UI at [http://localhost:8000/docs](http://localhost:8000/docs)
 
@@ -31,11 +27,7 @@ This project consists of two main services: **Data Provider** and **Dashboard Se
   - Asyncpg
   - Celery (with Redis)
   - Requests
-  
-- **Docker Command**:
-  ```bash
-  docker-compose up dashboard-service
-  ```
+- **URL**: http://localhost:8001
 
 - **Swagger Documentation**: Access the Swagger UI at [http://localhost:8001/docs](http://localhost:8001/docs)
 
@@ -43,8 +35,9 @@ This project consists of two main services: **Data Provider** and **Dashboard Se
 
 To run the entire application, including both services and the Redis broker, use the following command:
 ```bash
-docker-compose up
+docker-compose up --build
 ```
+If your docker is latest, you might run with `docker compose up --build` instead.
 This will start all services defined in the `docker-compose.yml` file.
 
 
