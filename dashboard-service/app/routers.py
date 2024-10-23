@@ -1,4 +1,6 @@
-from fastapi import APIRouter
+import datetime
+
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -12,21 +14,33 @@ class DashboardSchema(BaseModel):
     month: Optional[int]
     day: Optional[int]
     bookings_count: int
+    cancellations_count: int
 
     class Config:
         orm_mode = True
 
-@router.get("/dashboard", response_model=List[DashboardSchema])
-async def get_dashboard(hotel_id: int, year: int, period: str):
+@router.get("/dashboard", response_model=DashboardSchema)
+async def get_dashboard(hotel_id: int, period: datetime.date, filter_by: str = "month"):
     """
-    Get the dashboard data for a given hotel and period.
-    period: "month" or "day"
+    Retrieves dashboard data for a specified hotel and period. The period is expected in YYYY-MM-DD format. \n
+    The filter_by parameter allows for filtering by 'month', or 'day'. If 'month' is provided, data is filtered for the whole month.
+    If 'day' is provided, data is filtered for the whole day.
     """
-    if period == "month":
-        data = await DashboardData.filter(hotel_id=hotel_id, year=year).group_by("month").all()
-    elif period == "day":
-        data = await DashboardData.filter(hotel_id=hotel_id, year=year).group_by("day").all()
+    if filter_by == "month":
+        data = await DashboardData.filter(hotel_id=hotel_id, year=period.year, month=period.month).first()
+    elif filter_by == "day":
+        data = await DashboardData.filter(hotel_id=hotel_id, year=period.year, month=period.month, day=period.day).first()
     else:
-        return []
+        raise HTTPException(status_code=400, detail="Invalid filter_by parameter. Must be 'month' or 'day'.")
+    
+    if not data:
+        return DashboardSchema(
+            hotel_id=hotel_id,
+            year=period.year,
+            month=period.month,
+            day=period.day,
+            bookings_count=0,
+            cancellations_count=0,
+        )
 
     return data

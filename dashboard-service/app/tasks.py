@@ -45,7 +45,11 @@ async def process_update():
         ).first()
 
         if existing_record:
-            existing_record.bookings_count += 1 if event['rpg_status'] == 1 else 0
+            if event['rpg_status'] == 1:
+                existing_record.bookings_count += 1
+            else:
+                existing_record.cancellations_count += 1
+
             await existing_record.save()
         else:
             await DashboardData.create(
@@ -53,7 +57,8 @@ async def process_update():
                 year=event_timestamp.year,
                 month=event_timestamp.month,
                 day=event_timestamp.day,
-                bookings_count=1 if event['rpg_status'] == 1 else 0
+                bookings_count=1 if event['rpg_status'] == 1 else 0,
+                cancellations_count=0 if event['rpg_status'] == 1 else 1,
             )
 
     if len(events) > 0:

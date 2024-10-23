@@ -8,7 +8,8 @@ class DashboardData(Model):
     year = fields.IntField()
     month = fields.IntField()
     day = fields.IntField()
-    bookings_count = fields.IntField()
+    bookings_count = fields.IntField(default=0)
+    cancellations_count = fields.IntField(default=0)
 
     class Meta:
         table = "dashboard_data"
