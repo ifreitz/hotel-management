@@ -19,6 +19,7 @@ def update_dashboard():
 
 async def process_update():
     """Process updating of dashboard data."""
+    
     print("Updating dashboard....")
 
     await init_db()

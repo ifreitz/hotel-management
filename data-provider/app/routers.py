@@ -5,7 +5,9 @@ from typing import List, Optional
 
 from app.models import Event
 
+
 router = APIRouter()
+
 
 class EventSchema(BaseModel):
     hotel_id: int
@@ -17,10 +19,23 @@ class EventSchema(BaseModel):
     class Config:
         orm_mode = True
 
+
 @router.post("/events", response_model=EventSchema)
 async def create_event(event: EventSchema):
+    """
+    Creates a new event in the database.
+
+    This endpoint allows for the creation of a new event. The event details are expected in the request body in JSON format.
+
+    Parameters:
+    - event (EventSchema): The event details to be created. This includes hotel_id, timestamp, rpg_status, room_id, and night_of_stay.
+
+    Returns:
+    - EventSchema: The created event object.
+    """
     event_obj = await Event.create(**event.dict())
     return event_obj
+
 
 @router.get("/events", response_model=List[EventSchema])
 async def get_events(
@@ -32,6 +47,23 @@ async def get_events(
     night_of_stay__gte: Optional[date] = None,
     night_of_stay__lte: Optional[date] = None,
 ):
+    """
+    Retrieves a list of events based on various filters.
+
+    This endpoint allows for filtering events by hotel ID, update date range, RPG status, room ID, and night of stay date range.
+
+    Parameters:
+    - hotel_id (Optional[int]): The ID of the hotel to filter events by.
+    - updated__gte (Optional[datetime]): The start date and time for filtering events by their update timestamp.
+    - updated__lte (Optional[datetime]): The end date and time for filtering events by their update timestamp.
+    - rpg_status (Optional[int]): The RPG status to filter events by.
+    - room_id (Optional[int]): The ID of the room to filter events by.
+    - night_of_stay__gte (Optional[date]): The start date for filtering events by their night of stay.
+    - night_of_stay__lte (Optional[date]): The end date for filtering events by their night of stay.
+
+    Returns:
+    - List[EventSchema]: A list of events that match the specified filters.
+    """
     events_query = Event.all().order_by("timestamp")
     if hotel_id:
         events_query = events_query.filter(hotel_id=hotel_id)
