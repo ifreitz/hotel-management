@@ -37,9 +37,33 @@ To run the entire application, including both services and the Redis broker, use
 ```bash
 docker-compose up --build
 ```
-If your docker is latest, you might run with `docker compose up --build` instead.
-This will start all services defined in the `docker-compose.yml` file.
+If your Docker is latest, you might run with `docker compose up --build` instead. This will start all services defined in the `docker-compose.yml` file.
 
+## Running Tests
+
+To run the tests for the Dashboard Service, navigate to the `dashboard-service` directory and use the following command:
+```bash
+docker compose exec dashboard-service pytest
+```
+This command will discover and run all the tests defined in the `tests` directory of the Dashboard Service. Make sure you have all the necessary dependencies installed, including `pytest`, which is listed in the `requirements.txt` file.
+
+## Manual Testing with Swagger
+
+You can manually test the APIs using Swagger UI. Here are the instructions for both services:
+
+### Data Provider API
+
+1. Open your web browser and navigate to [http://localhost:8000/docs](http://localhost:8000/docs).
+2. You will see the Swagger UI with all available endpoints for the Data Provider API.
+3. Click on any endpoint to expand it, fill in the required parameters, and click the "Execute" button to test the API.
+
+### Dashboard Service API
+
+1. Open your web browser and navigate to [http://localhost:8001/docs](http://localhost:8001/docs).
+2. Similar to the Data Provider, you will see the Swagger UI with all available endpoints for the Dashboard Service API.
+3. Click on any endpoint to expand it, fill in the required parameters, and click the "Execute" button to test the API.
+
+This allows you to interact with the APIs directly and see the responses in real-time.
 
 ## Database
 

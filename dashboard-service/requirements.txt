@@ -5,3 +5,7 @@ asyncpg
 celery[redis]
 fastapi[celery]
 requests
+pytest
+requests-mock
+httpx
+pytest-mock
