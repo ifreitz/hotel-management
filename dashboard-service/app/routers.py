@@ -27,20 +27,21 @@ async def get_dashboard(hotel_id: int, period: datetime.date, filter_by: str = "
     If 'day' is provided, data is filtered for the whole day.
     """
     if filter_by == "month":
-        data = await DashboardData.filter(hotel_id=hotel_id, year=period.year, month=period.month).first()
+        data = await DashboardData.filter(hotel_id=hotel_id, year=period.year, month=period.month).all()
     elif filter_by == "day":
-        data = await DashboardData.filter(hotel_id=hotel_id, year=period.year, month=period.month, day=period.day).first()
+        data = await DashboardData.filter(hotel_id=hotel_id, year=period.year, month=period.month, day=period.day).all()
     else:
         raise HTTPException(status_code=400, detail="Invalid filter_by parameter. Must be 'month' or 'day'.")
-    
-    if not data:
-        return DashboardSchema(
-            hotel_id=hotel_id,
-            year=period.year,
-            month=period.month,
-            day=period.day,
-            bookings_count=0,
-            cancellations_count=0,
-        )
 
-    return data
+    # Aggregate bookings and cancellations
+    bookings_count = sum(item.bookings_count for item in data)
+    cancellations_count = sum(item.cancellations_count for item in data)
+
+    return DashboardSchema(
+        hotel_id=hotel_id,
+        year=period.year,
+        month=period.month,
+        day=period.day,
+        bookings_count=bookings_count,
+        cancellations_count=cancellations_count,
+    )
