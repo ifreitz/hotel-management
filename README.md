@@ -1,6 +1,6 @@
 # Project Overview
 
-This project consists of two main services: **Data Provider** and **Dashboard Service**. The Data Provider service is responsible for handling booking and cancellation events, while the Dashboard Service aggregates this data for reporting purposes.
+This project uses **Microservice Architecture**. It consists of two main services: **Data Provider** and **Dashboard Service**. The Data Provider service is responsible for handling booking and cancellation events, while the Dashboard Service aggregates this data for reporting purposes.
 
 ## Services
 
